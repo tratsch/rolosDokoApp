@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply min-h-screen font-card;
+    background-color: #c8b89a;
+  }
+}
+
+@layer components {
+  .card-base {
+    @apply rounded-lg cursor-pointer transition-all duration-200 select-none;
+    border: 1px solid #1a1a1a;
+    background: linear-gradient(135deg, #fff9f0 0%, #fdf3e3 50%, #faf0e6 100%);
+    box-shadow: 2px 4px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+
+  .card-trump {
+    /* subtle gold shimmer, no border override */
+    box-shadow: 2px 4px 8px rgba(0,0,0,0.35), 0 0 6px rgba(212,175,55,0.25), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+
+  .card-normal {
+    /* thin black border from card-base */
+  }
+
+  .card-red {
+    color: #dc2626;
+  }
+
+  .card-black {
+    color: #1a1a1a;
+  }
+
+  .card-playable {
+    box-shadow: 2px 4px 8px rgba(0,0,0,0.35), 0 0 10px rgba(74,222,128,0.45), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 4px 10px 20px rgba(0,0,0,0.45), 0 0 12px rgba(74,222,128,0.5);
+    z-index: 10;
+  }
+
+  .card-selected {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 12px 24px rgba(59,130,246,0.5), 0 0 0 2px #3b82f6;
+    z-index: 20;
+  }
+
+  .card-invalid {
+    filter: brightness(0.65);
+    cursor: not-allowed;
+  }
+
+  .card-invalid:hover {
+    transform: none;
+  }
+}
+
+/* Wood texture for table */
+.felt-table {
+  background-image: url('/table-bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Card back pattern – classic blue playing card back */
+.card-back {
+  background-color: #1a3a8f;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.13) 0px, rgba(255,255,255,0.13) 1px,
+      transparent 1px, transparent 6px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255,255,255,0.13) 0px, rgba(255,255,255,0.13) 1px,
+      transparent 1px, transparent 6px
+    );
+  border: 3px solid #fff !important;
+  box-sizing: border-box;
+}
+
+/* Animations */
+@keyframes deal-card {
+  from {
+    transform: translateY(-100px) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-deal {
+  animation: deal-card 0.3s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.2s ease-out forwards;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+}
