@@ -806,8 +806,23 @@ export class GameEngine {
 
     this.log(`${winnerPlayer.name} gewinnt Stich ${completedTricks.length} (${trick.points} Pkt.)`);
 
-    // Pause at trick-end so players can see the completed trick
     const winnerIdx = this.state.players.findIndex(p => p.id === winnerId);
+
+    // After the last trick skip trick-end and go directly to scoring
+    if (completedTricks.length === 10) {
+      this.setState({
+        players: updatedPlayers,
+        completedTricks,
+        currentTrick: completedTrick,
+        pendingTrickWinnerId: undefined,
+        currentPlayerIndex: winnerIdx,
+      });
+      this.finishGame();
+      this.onStateChange(this.state);
+      return;
+    }
+
+    // Pause at trick-end so players can see the completed trick
     this.setState({
       players: updatedPlayers,
       completedTricks,
@@ -889,23 +904,18 @@ export class GameEngine {
     const completedTricks = state.completedTricks;
     const winnerIdx = state.currentPlayerIndex;
 
-    if (completedTricks.length === 10) {
-      this.setState({ currentTrick: null, phase: 'playing', pendingTrickWinnerId: undefined });
-      this.finishGame();
-    } else {
-      this.setState({
-        phase: 'playing',
-        currentTrick: {
-          id: completedTricks.length,
-          cards: [],
-          points: 0,
-          isComplete: false,
-        },
-        currentPlayerIndex: winnerIdx,
-        trickLeaderPosition: winnerIdx,
-        pendingTrickWinnerId: undefined,
-      });
-    }
+    this.setState({
+      phase: 'playing',
+      currentTrick: {
+        id: completedTricks.length,
+        cards: [],
+        points: 0,
+        isComplete: false,
+      },
+      currentPlayerIndex: winnerIdx,
+      trickLeaderPosition: winnerIdx,
+      pendingTrickWinnerId: undefined,
+    });
   }
 
   acknowledgeTrick(): void {
