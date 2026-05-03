@@ -444,8 +444,8 @@ export class GameRoom {
   // ============================================================
 
   async closeRoom(): Promise<void> {
-    await this.sendResultEmail();
     this.io.to(this.roomId).emit('room-closed', { message: 'Der Raum wurde geschlossen.' });
+    this.sendResultEmail().catch(err => console.error('[Email] unhandled:', err));
   }
 
   private buildResultHtml(): string {
@@ -495,6 +495,7 @@ export class GameRoom {
       return;
     }
 
+    console.log(`[Email] Sende an ${to} via ${smtpUser}@smtp.gmail.com`);
     try {
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST ?? 'smtp.gmail.com',
@@ -511,8 +512,8 @@ export class GameRoom {
       });
 
       console.log(`[Email] Ergebnis gesendet an ${to}`);
-    } catch (err) {
-      console.error('[Email] Fehler beim Senden:', err);
+    } catch (err: any) {
+      console.error('[Email] Fehler beim Senden:', err?.message ?? err);
     }
   }
 }
