@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: rolosDokoApp-server
+    runtime: node
+    region: frankfurt
+    buildCommand: npm ci && npm run build --workspace=packages/shared && npm run build --workspace=packages/server
+    startCommand: npm run start --workspace=packages/server
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: https://tratsch.github.io
