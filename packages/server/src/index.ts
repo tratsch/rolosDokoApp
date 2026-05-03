@@ -8,18 +8,18 @@ import { v4 as uuidv4 } from 'uuid';
 const app = express();
 const httpServer = createServer(app);
 
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+const ALLOWED_ORIGINS: string | string[] = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
-  : ['http://localhost:5173'];
+  : '*';
 
-app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
+app.use(cors({ origin: ALLOWED_ORIGINS, credentials: ALLOWED_ORIGINS !== '*' }));
 app.use(express.json());
 
 const io = new Server(httpServer, {
   cors: {
     origin: ALLOWED_ORIGINS,
     methods: ['GET', 'POST'],
-    credentials: true,
+    credentials: ALLOWED_ORIGINS !== '*',
   },
 });
 
