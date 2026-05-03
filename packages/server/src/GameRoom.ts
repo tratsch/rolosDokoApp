@@ -503,7 +503,7 @@ export class GameRoom {
         secure: false,
         family: 4,
         auth: { user: smtpUser, pass: smtpPass },
-      });
+      } as any);
 
       await transporter.sendMail({
         from: `"Doppelkopf" <${smtpUser}>`,
