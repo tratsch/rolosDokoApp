@@ -33,6 +33,7 @@ interface GameStore {
 
   // UI
   selectedCard: CardId | null;
+  showRoundScore: boolean;
   chatMessages: { from: string; message: string }[];
 
   // Actions
@@ -52,6 +53,7 @@ interface GameStore {
   sendChat: (message: string) => void;
   clearError: () => void;
   closeRoom: () => void;
+  setShowRoundScore: (show: boolean) => void;
 }
 
 const useGameStore = create<GameStore>((set, get) => ({
@@ -67,6 +69,7 @@ const useGameStore = create<GameStore>((set, get) => ({
   reservationOptions: null,
   reservationPhase: null,
   armutOffer: null,
+  showRoundScore: false,
   selectedCard: null,
   chatMessages: [],
 
@@ -157,6 +160,8 @@ const useGameStore = create<GameStore>((set, get) => ({
   closeRoom: () => {
     socket.emit('close-room', {});
   },
+
+  setShowRoundScore: (show) => set({ showRoundScore: show }),
 }));
 
 // ============================================================
@@ -183,6 +188,7 @@ export function initSocketListeners(): void {
     useGameStore.setState({
       gameState: state,
       myPlayerId: state.myPlayerId,
+      ...(state.phase === 'scoring' ? { showRoundScore: true } : {}),
     });
   });
 
@@ -226,6 +232,7 @@ export function initSocketListeners(): void {
       armutOffer: null,
       selectedCard: null,
       myPlayerId: null,
+      showRoundScore: false,
     });
   });
 }

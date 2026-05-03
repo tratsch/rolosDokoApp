@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import useGameStore, { initSocketListeners } from './store/gameStore';
 import { Lobby } from './components/Lobby';
 import { Table } from './components/Table';
@@ -37,9 +37,9 @@ function App() {
     clearError,
     selectCard,
     closeRoom,
+    showRoundScore,
+    setShowRoundScore,
   } = useGameStore();
-
-  const [showRoundScore, setShowRoundScore] = useState(false);
 
   // Initialize socket listeners
   useEffect(() => {
@@ -48,13 +48,6 @@ function App() {
       listenersInitialized = true;
     }
   }, []);
-
-  // Show round score when game goes to scoring phase
-  useEffect(() => {
-    if (gameState?.phase === 'scoring' && gameState.lastRoundScore) {
-      setShowRoundScore(true);
-    }
-  }, [gameState?.phase]);
 
   // Room players: use game-state during game, lobbyPlayers in lobby
   const roomPlayers = gameState?.players?.map(p => ({
@@ -89,6 +82,7 @@ function App() {
     setShowRoundScore(false);
     startNewRound();
   };
+
 
   if (isInLobby || !gameState || !myPlayerId) {
     return (
