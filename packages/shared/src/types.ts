@@ -199,6 +199,7 @@ export interface ServerToClientEvents {
   'error': (data: { message: string }) => void;
   'room-update': (data: { players: Pick<Player, 'id' | 'name' | 'isBot' | 'isConnected' | 'position'>[] }) => void;
   'chat': (data: { from: string; message: string }) => void;
+  'room-closed': (data: { message: string }) => void;
 }
 
 export interface ClientToServerEvents {
@@ -213,6 +214,7 @@ export interface ClientToServerEvents {
   'chat': (data: { message: string }) => void;
   'new-round': (data: Record<string, never>) => void;
   'acknowledge-trick': (data: Record<string, never>) => void;
+  'close-room': (data: Record<string, never>) => void;
 }
 
 // Client-side game state (filtered - player only sees own cards)

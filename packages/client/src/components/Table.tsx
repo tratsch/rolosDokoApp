@@ -23,6 +23,7 @@ interface TableProps {
   onMakeAnnouncement: (type: AnnouncementType) => void;
   onNewRound: () => void;
   onAcknowledgeTrick: () => void;
+  onCloseRoom: () => void;
 }
 
 // Relative positions: player positions around the table from my perspective
@@ -49,6 +50,7 @@ export const Table: React.FC<TableProps> = ({
   onMakeAnnouncement,
   onNewRound,
   onAcknowledgeTrick,
+  onCloseRoom,
 }) => {
   const { myPlayerId, players, myCards, validCards, currentTrick, phase } = gameState;
   const myPlayer = players.find(p => p.id === myPlayerId);
@@ -290,6 +292,7 @@ export const Table: React.FC<TableProps> = ({
             players={players}
             onNewRound={onNewRound}
             onContinue={onNewRound}
+            onCloseRoom={onCloseRoom}
           />
         )}
 

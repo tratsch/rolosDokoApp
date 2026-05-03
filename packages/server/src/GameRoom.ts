@@ -1,4 +1,5 @@
 import { Server, Socket } from 'socket.io';
+import nodemailer from 'nodemailer';
 import {
   GameState, Player, ClientGameState, Card, CardId, ReservationType,
   AnnouncementType, RoundScore
@@ -436,5 +437,82 @@ export class GameRoom {
 
   getSocketId(playerId: string): string | undefined {
     return this.players.get(playerId)?.socketId;
+  }
+
+  // ============================================================
+  // Close Room
+  // ============================================================
+
+  async closeRoom(): Promise<void> {
+    await this.sendResultEmail();
+    this.io.to(this.roomId).emit('room-closed', { message: 'Der Raum wurde geschlossen.' });
+  }
+
+  private buildResultHtml(): string {
+    const state = this.currentState;
+    const players = Array.from(this.players.values()).map(d => d.player);
+    const sorted = [...players].sort((a, b) => (this.scores[a.id] ?? 0) - (this.scores[b.id] ?? 0));
+
+    const rows = sorted.map((p, i) => {
+      const pts = this.scores[p.id] ?? 0;
+      const medal = ['🥇', '🥈', '🥉', ''][i] ?? '';
+      return `<tr>
+        <td style="padding:6px 12px">${medal} ${i + 1}.</td>
+        <td style="padding:6px 12px"><b>${p.name}</b>${p.isBot ? ' 🤖' : ''}</td>
+        <td style="padding:6px 12px;text-align:right"><b>${pts}</b> Strafpunkte</td>
+      </tr>`;
+    }).join('');
+
+    const reservation = state?.activeReservation
+      ? state.activeReservation.replace(/-/g, ' ')
+      : 'Normalspiel';
+
+    return `
+      <div style="font-family:sans-serif;max-width:480px;margin:auto">
+        <h2 style="color:#1a3a8f">🃏 Doppelkopf – Spielergebnis</h2>
+        <p>Raum: <b>${this.roomId}</b> &nbsp;|&nbsp; Runde: <b>${this.roundNumber}</b> &nbsp;|&nbsp; ${reservation}</p>
+        <table style="border-collapse:collapse;width:100%;background:#f5f5f5;border-radius:8px">
+          <thead><tr style="background:#1a3a8f;color:white">
+            <th style="padding:8px 12px">Platz</th>
+            <th style="padding:8px 12px">Spieler</th>
+            <th style="padding:8px 12px">Punkte</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p style="color:#888;font-size:12px;margin-top:16px">
+          Niedrigste Strafpunktzahl gewinnt.
+        </p>
+      </div>`;
+  }
+
+  private async sendResultEmail(): Promise<void> {
+    const to = process.env.RESULT_EMAIL ?? 'roland.wuerth@gmail.com';
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+
+    if (!smtpUser || !smtpPass) {
+      console.log('[Email] SMTP_USER/SMTP_PASS not set — skipping email');
+      return;
+    }
+
+    try {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST ?? 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT ?? '587'),
+        secure: false,
+        auth: { user: smtpUser, pass: smtpPass },
+      });
+
+      await transporter.sendMail({
+        from: `"Doppelkopf" <${smtpUser}>`,
+        to,
+        subject: `🃏 Doppelkopf Ergebnis – Raum ${this.roomId}`,
+        html: this.buildResultHtml(),
+      });
+
+      console.log(`[Email] Ergebnis gesendet an ${to}`);
+    } catch (err) {
+      console.error('[Email] Fehler beim Senden:', err);
+    }
   }
 }

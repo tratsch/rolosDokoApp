@@ -36,6 +36,7 @@ function App() {
     acknowledgeTrick,
     clearError,
     selectCard,
+    closeRoom,
   } = useGameStore();
 
   const [showRoundScore, setShowRoundScore] = useState(false);
@@ -138,6 +139,7 @@ function App() {
         onMakeAnnouncement={makeAnnouncement}
         onNewRound={handleNewRound}
         onAcknowledgeTrick={acknowledgeTrick}
+        onCloseRoom={closeRoom}
       />
     </>
   );

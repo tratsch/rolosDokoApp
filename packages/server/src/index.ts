@@ -252,6 +252,18 @@ io.on('connection', (socket) => {
   });
 
   // ============================================================
+  // Close Room
+  // ============================================================
+  socket.on('close-room', async () => {
+    const roomId = playerRooms.get(socket.id);
+    if (!roomId) return;
+    const room = rooms.get(roomId);
+    if (!room) return;
+    await room.closeRoom();
+    rooms.delete(roomId);
+  });
+
+  // ============================================================
   // Disconnect
   // ============================================================
   socket.on('disconnect', () => {

@@ -128,6 +128,7 @@ interface RoundScoreDisplayProps {
   players: Player[];
   onNewRound: () => void;
   onContinue: () => void;
+  onCloseRoom: () => void;
 }
 
 export const RoundScoreDisplay: React.FC<RoundScoreDisplayProps> = ({
@@ -135,6 +136,7 @@ export const RoundScoreDisplay: React.FC<RoundScoreDisplayProps> = ({
   players,
   onNewRound,
   onContinue,
+  onCloseRoom,
 }) => {
   const reTeamPlayers = players.filter(p => roundScore.reTeam.includes(p.id));
   const contraTeamPlayers = players.filter(p => roundScore.contraTeam.includes(p.id));
@@ -214,6 +216,13 @@ export const RoundScoreDisplay: React.FC<RoundScoreDisplayProps> = ({
             className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg text-lg"
           >
             Nächste Runde
+          </button>
+          <button
+            onClick={onCloseRoom}
+            className="bg-red-700 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg text-lg"
+            title="Raum schließen und Ergebnis per E-Mail senden"
+          >
+            Beenden
           </button>
         </div>
       </div>

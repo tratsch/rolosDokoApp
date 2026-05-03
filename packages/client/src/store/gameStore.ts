@@ -51,6 +51,7 @@ interface GameStore {
   acknowledgeTrick: () => void;
   sendChat: (message: string) => void;
   clearError: () => void;
+  closeRoom: () => void;
 }
 
 const useGameStore = create<GameStore>((set, get) => ({
@@ -152,6 +153,10 @@ const useGameStore = create<GameStore>((set, get) => ({
   },
 
   clearError: () => set({ error: null }),
+
+  closeRoom: () => {
+    socket.emit('close-room', {});
+  },
 }));
 
 // ============================================================
@@ -209,6 +214,19 @@ export function initSocketListeners(): void {
     useGameStore.setState(state => ({
       chatMessages: [...state.chatMessages.slice(-49), msg],
     }));
+  });
+
+  socket.on('room-closed', () => {
+    useGameStore.setState({
+      gameState: null,
+      lastRoundScore: null,
+      lobbyPlayers: [],
+      reservationOptions: null,
+      reservationPhase: null,
+      armutOffer: null,
+      selectedCard: null,
+      myPlayerId: null,
+    });
   });
 }
 
